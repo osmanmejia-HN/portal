@@ -1,0 +1,1494 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portal docente · Sintaxis de Python</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=DM+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --green:#0B8A44;
+  --green2:#43B86E;
+  --green3:#EAF7EF;
+  --navy:#0F3D2E;
+  --textm:#395248;
+  --textl:#6D8479;
+  --border:#D7E8DE;
+  --bg:#F6FBF7;
+  --card:#FFFFFF;
+  --soft:#EEF8F1;
+  --code:#0D1F17;
+}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-family:'DM Sans',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--navy)}
+.deck{width:100%;height:100vh;position:relative;background:radial-gradient(circle at top left,rgba(67,184,110,.13),transparent 34%),linear-gradient(180deg,#fff 0%,#f4fbf6 100%)}
+.slide{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .55s ease,transform .55s ease;transform:translateX(54px);overflow:hidden}
+.slide.active{opacity:1;pointer-events:all;transform:translateX(0)}
+.slide.exit{opacity:0;transform:translateX(-54px)}
+.sheet{height:100%;padding:72px 52px 82px;display:flex;align-items:stretch;justify-content:center}
+.content-wrap{width:min(1180px,100%);display:flex;flex-direction:column;gap:18px;position:relative}
+.slide-num{position:absolute;top:-48px;left:0;background:var(--green);color:white;font-size:11px;font-weight:800;letter-spacing:2px;padding:8px 16px;border-radius:20px;text-transform:uppercase;z-index:5;box-shadow:0 8px 20px rgba(11,138,68,.22)}
+.slide-header{background:rgba(255,255,255,.92);border:1px solid var(--border);border-radius:22px;padding:24px 28px 20px;box-shadow:0 14px 38px rgba(15,61,46,.08)}
+.eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--green);font-weight:800;margin-bottom:7px}
+.slide-title{font-family:'Playfair Display',Georgia,serif;font-size:clamp(28px,3.3vw,48px);line-height:1.05;color:var(--green);font-style:italic;letter-spacing:-.4px;margin-bottom:14px}
+.meta-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.meta-row span{background:var(--soft);border:1px solid rgba(11,138,68,.18);border-radius:20px;padding:6px 11px;color:var(--green);font-size:10px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase}
+.code-card{flex:1;min-height:0;background:var(--card);border:1px solid var(--border);border-radius:24px;box-shadow:0 18px 46px rgba(15,61,46,.10);display:flex;flex-direction:column;overflow:hidden}
+.code-toolbar{height:46px;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:0 18px;background:linear-gradient(90deg,var(--soft),#fff);border-bottom:1px solid var(--border);color:var(--textl);font-size:11px;letter-spacing:1.3px;text-transform:uppercase;font-weight:800}
+.copy-btn{border:0;background:var(--green);color:white;border-radius:16px;padding:7px 12px;font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;cursor:pointer;box-shadow:0 6px 18px rgba(11,138,68,.18)}
+.copy-btn:hover{background:#08743A}
+pre{flex:1;overflow:auto;padding:24px 28px;font-family:'JetBrains Mono','Consolas','Courier New',monospace;font-size:clamp(12px,1.06vw,15px);line-height:1.68;color:var(--code);white-space:pre-wrap;word-break:break-word;background:linear-gradient(180deg,#fff 0%,#fbfefc 100%)}
+pre::-webkit-scrollbar{width:8px;height:8px}
+pre::-webkit-scrollbar-thumb{background:#BFDCC9;border-radius:8px}
+.slide-footer{display:flex;justify-content:space-between;align-items:center;gap:12px;background:rgba(255,255,255,.7);border:1px solid var(--border);border-radius:18px;padding:12px 16px;color:var(--textl);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;font-weight:800}
+.slide-footer span:last-child{color:var(--green)}
+.nav{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:12px;z-index:500;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border:1.5px solid var(--border);border-radius:44px;padding:8px 18px;box-shadow:0 10px 30px rgba(15,61,46,.11)}
+.nav button{background:none;border:none;color:var(--textl);cursor:pointer;font-size:22px;padding:2px 8px;border-radius:8px;transition:color .2s,background .2s}
+.nav button:hover{color:var(--green);background:rgba(11,138,68,.07)}
+.dots{display:flex;gap:5px;align-items:center;max-width:420px;overflow:hidden}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--border);cursor:pointer;transition:all .25s;border:0}
+.dot.on{background:var(--green);width:24px;border-radius:5px}
+.ctr{color:var(--textl);font-size:11px;min-width:54px;text-align:center;font-weight:800;letter-spacing:1px}
+.topbar{position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:450;background:rgba(255,255,255,.82);backdrop-filter:blur(10px);border:1px solid var(--border);border-radius:32px;padding:9px 20px;color:var(--navy);font-size:11px;letter-spacing:1.8px;text-transform:uppercase;font-weight:800;box-shadow:0 8px 24px rgba(15,61,46,.08)}
+.progress{position:fixed;left:0;top:0;height:5px;background:linear-gradient(90deg,var(--green),var(--green2));width:0;z-index:600;transition:width .35s ease}
+.help{position:fixed;right:18px;bottom:20px;z-index:440;background:rgba(15,61,46,.88);color:#fff;border-radius:18px;padding:8px 11px;font-size:10px;letter-spacing:1.2px;text-transform:uppercase;font-weight:700;opacity:.86}
+.slide.active .ae{animation:sU .45s ease forwards}
+.slide.active .ae:nth-child(1){animation-delay:.05s}
+.slide.active .ae:nth-child(2){animation-delay:.12s}
+.ae{opacity:0;transform:translateY(14px)}
+@keyframes sU{to{opacity:1;transform:translateY(0)}}
+@media(max-width:980px){
+  html,body{overflow:auto}
+  .deck{height:auto;min-height:100vh}
+  .slide{position:relative;display:none;min-height:100vh;transform:none}
+  .slide.active{display:block}
+  .sheet{padding:70px 18px 118px}
+  .topbar{display:none}
+  .help{display:none}
+  .dots{max-width:230px}
+    pre{font-size:12px;padding:18px}
+}
+@media(max-width:560px){
+  .slide-title{font-size:27px}
+  .dots{display:none}
+  .ctr{min-width:58px}
+  .slide-footer{flex-direction:column;align-items:flex-start}
+  .code-toolbar{height:auto;min-height:46px;align-items:flex-start;flex-direction:column;padding:10px 14px}
+}
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="topbar">Sintaxis de Python · Portal Docente Interactivo</div>
+<main class="deck" id="deck">
+
+    <section class="slide active" data-index="1" data-title="Bucles">
+      <div class="sheet">
+        <div class="slide-num">01 · Sintaxis Python</div>
+        <div class="content-wrap">
+          <header class="slide-header ae">
+            <p class="eyebrow">Programación en Python · Clase interactiva</p>
+            <h1 class="slide-title">Bucles</h1>
+            <div class="meta-row">
+              <span>Hoja 01</span>
+              <span>213 palabras</span>
+              <span>1,603 caracteres</span>
+            </div>
+          </header>
+          <article class="code-card ae">
+            <div class="code-toolbar">
+              <span>Contenido original conservado</span>
+              <button class="copy-btn" type="button" data-copy="0">Copiar hoja</button>
+            </div>
+            <pre><code>'''BUCLES**************************************************************
+ 📚 Los bucles son estructuras de control que permiten repetir uno o varios bloques 
+     de código varias veces, sin necesidad de escribir las mismas instrucciones de 
+     forma manual. Esta repetición puede ser controlada por una cantidad definida 
+     de veces o hasta que se cumpla una determinada condición.
+ 🔁 Existen dos tipos principales de bucles en Python:
+        🔹 `for`: se usa cuando se sabe con exactitud cuántas veces se debe repetir 
+             una acción. 
+        🔹 `while`: se usa cuando no se sabe exactamente cuántas veces se repetirá, 
+             y depende de una condición que puede cambiar durante la ejecución.
+ 💡 Aplicación en econometría: los bucles permiten automatizar tareas repetitivas, 
+      como recorrer registros de datos, aplicar cálculos a diferentes observaciones, 
+      generar reportes o simular escenarios económicos en serie.
+ ✍️ Sintaxis, a continuación se muestran las variantes:   ''' 
+#FOR
+#for i in range(1, 6):
+#    print("Número:", i)
+    
+#repeticiones = int(input("Ingrese repeticiones: "))
+#print("Contando repeticiones con for:")
+#for i in range(1, repeticiones + 1):
+#    print(i,"- No debo olvidar como funciona el bucle for")
+
+
+#frutas = ["manzana", "pera", "uva"]
+#for fruta in frutas:
+#    print("Fruta:", fruta)
+    
+    
+#import os
+#respuesta = 1
+#while respuesta == 1:    
+#    os.system("cls")#para windows
+#    print("Esto va a repetirse infinitamente hasta que tu decidas")
+#    respuesta=int(input("Escribe 1 para continuar | otro numero para salir:"))
+
+
+
+
+
+</code></pre>
+          </article>
+          <footer class="slide-footer">
+            <span>Bucles, funciones, modularidad y estructuras de datos</span>
+            <span>Elaborado por Osman Mejía</span>
+          </footer>
+        </div>
+      </div>
+    </section>
+    <section class="slide" data-index="2" data-title="Integración de conocimientos y sistema de caja">
+      <div class="sheet">
+        <div class="slide-num">02 · Sintaxis Python</div>
+        <div class="content-wrap">
+          <header class="slide-header ae">
+            <p class="eyebrow">Programación en Python · Clase interactiva</p>
+            <h1 class="slide-title">Integración de conocimientos y sistema de caja</h1>
+            <div class="meta-row">
+              <span>Hoja 02</span>
+              <span>288 palabras</span>
+              <span>2,664 caracteres</span>
+            </div>
+          </header>
+          <article class="code-card ae">
+            <div class="code-toolbar">
+              <span>Contenido original conservado</span>
+              <button class="copy-btn" type="button" data-copy="1">Copiar hoja</button>
+            </div>
+            <pre><code>'''INTEGRACIÓN DE CONOCIMIENTOS**************************************************************
+ 📚 El siguiente ejemplo reúne todos los conceptos aprendidos hasta el momento en un solo 
+     programa funcional. Combina variables, entrada y salida de datos, estructuras 
+     de control, bucles, operadores y el manejo de librerías para crear un sistema 
+     interactivo completo y estructurado.
+ 🧠  Importancia de integrar conocimientos:
+        - Desarrollar la lógica de programación es esencial para resolver problemas 
+          de forma ordenada, analítica y eficiente. Cada línea de código refleja un 
+          razonamiento que conecta causa y efecto dentro de un proceso.
+        - Esta práctica fortalece el pensamiento computacional, permitiendo al 
+          transformar un problema real en pasos lógicos que el programa puede ejecutar.
+        - En la econometría, la lógica y la programación se combinan para construir 
+          modelos, analizar datos y generar interpretaciones fundamentadas. 
+          Entender cómo fluye la información dentro de un algoritmo facilita el 
+          diseño de simulaciones, proyecciones y cálculos estadísticos.
+        - Integrar todos los conocimientos adquiridos refuerza la capacidad de 
+          analizar, estructurar y automatizar procesos de análisis cuantitativo, 
+          mejorando la precisión y consistencia de los resultados.
+ ✍️  A continuación se muestra el código completo de integración:   '''
+IVA =0.15
+PORCENTAJE_DESCUENTO = 0.20
+EDAD_TERCERA_EDAD = 60
+ANIO_ACTUAL =2025
+DESCUENTO = 0
+
+#LIMPIAR PANTALLA
+import os
+while True:  
+    os.system("cls")
+    
+    #entrada de datos
+    print("--- MENU DE COMPRA ---")
+    nombre = input("nombre del cliente:")
+    monto = float(input("monto gastado:"))
+    anio_nac = int(input("Año de nacimiento:"))
+
+    #calculos
+    edad = ANIO_ACTUAL - anio_nac
+    if edad&gt;EDAD_TERCERA_EDAD:
+        DESCUENTO=monto*PORCENTAJE_DESCUENTO
+    base_imponible = monto - DESCUENTO
+    impuesto = base_imponible * IVA
+    total = base_imponible + impuesto
+
+    #salida a pantalla
+    os.system("cls")
+    print("\n---RESUMEN DE COMPRA---")
+    print(f"cliente:{nombre}")
+    print(f"Edad:{edad} años")
+    print(f"Subtotal:L.{monto:,.2f}")
+    print(f"Descuento tercera edad:L.{DESCUENTO:,.2f}")
+    print(f"Subtotal:L.{monto-DESCUENTO:,.2f}")
+    print(f"Subtotal antes de IVA:L.{base_imponible:,.2f}")
+    print(f"Impuesto:L.{impuesto:,.2f}")
+    print(f"Total:L.{total:,.2f}")
+    opcion = input("\n¿Desea ingresar otra compra? (s/n): ").lower()
+    if opcion != "s":
+        print("\nPrograma finalizado. ¡Gracias por usar el sistema de caja!")
+        break
+
+
+
+</code></pre>
+          </article>
+          <footer class="slide-footer">
+            <span>Bucles, funciones, modularidad y estructuras de datos</span>
+            <span>Elaborado por Osman Mejía</span>
+          </footer>
+        </div>
+      </div>
+    </section>
+    <section class="slide" data-index="3" data-title="Funciones">
+      <div class="sheet">
+        <div class="slide-num">03 · Sintaxis Python</div>
+        <div class="content-wrap">
+          <header class="slide-header ae">
+            <p class="eyebrow">Programación en Python · Clase interactiva</p>
+            <h1 class="slide-title">Funciones</h1>
+            <div class="meta-row">
+              <span>Hoja 03</span>
+              <span>177 palabras</span>
+              <span>1,391 caracteres</span>
+            </div>
+          </header>
+          <article class="code-card ae">
+            <div class="code-toolbar">
+              <span>Contenido original conservado</span>
+              <button class="copy-btn" type="button" data-copy="2">Copiar hoja</button>
+            </div>
+            <pre><code>'''FUNCIONES**************************************************************
+ 📚 Una función es un bloque de código diseñado para realizar una tarea específica. 
+     Se utiliza para organizar el programa en partes más pequeñas, reutilizables y 
+     fáciles de mantener. En lugar de repetir el mismo código varias veces, una 
+     función permite ejecutar una acción con solo llamarla por su nombre.
+
+ 🧠  Características principales de una función:
+        🔹 Recibe datos de entrada (parámetros o argumentos).
+        🔹 Realiza un proceso interno con esos datos.
+        🔹 Retorna un valor o resultado (opcional).
+        🔹 Puede reutilizarse en distintas partes del programa.
+
+ 💡  Importancia del uso de funciones:
+        - Fomentan la **modularidad**, dividiendo el código en partes más comprensibles.  
+        - Permiten **reutilizar lógica** en diferentes programas sin escribir todo de nuevo.  
+        - Facilitan la **depuración**, ya que los errores pueden aislarse dentro de una función.  
+        - En **econometría**, las funciones son esenciales para definir modelos, ejecutar cálculos 
+          repetitivos (como regresiones o promedios móviles) y automatizar procesos analíticos.  
+        - Desarrollar funciones también fortalece la **lógica de pensamiento algorítmico**, al 
+          estructurar el código de forma secuencial, clara y eficiente.
+
+ ✍️ Sintaxis básica:
+'''
+</code></pre>
+          </article>
+          <footer class="slide-footer">
+            <span>Bucles, funciones, modularidad y estructuras de datos</span>
+            <span>Elaborado por Osman Mejía</span>
+          </footer>
+        </div>
+      </div>
+    </section>
+    <section class="slide" data-index="4" data-title="Sintaxis y ejemplos de funciones">
+      <div class="sheet">
+        <div class="slide-num">04 · Sintaxis Python</div>
+        <div class="content-wrap">
+          <header class="slide-header ae">
+            <p class="eyebrow">Programación en Python · Clase interactiva</p>
+            <h1 class="slide-title">Sintaxis y ejemplos de funciones</h1>
+            <div class="meta-row">
+              <span>Hoja 04</span>
+              <span>261 palabras</span>
+              <span>2,022 caracteres</span>
+            </div>
+          </header>
+          <article class="code-card ae">
+            <div class="code-toolbar">
+              <span>Contenido original conservado</span>
+              <button class="copy-btn" type="button" data-copy="3">Copiar hoja</button>
+            </div>
+            <pre><code>
+import os
+os.system("cls")
+
+'''
+#sintaxis basica
+def nombre_funcion(): #Se usa la palabra clave def, el nombre de la función y paréntesis.
+    # bloque de instrucciones
+    print("Hola desde una función")
+    
+nombre_funcion()
+    
+#Con parámetros (argumentos)  
+def saludar(nombre):
+    print("Hola", nombre)
+saludar("Ana")
+
+#con valor de retorno
+def cuadrado(x):
+    return x * x
+
+resultado = cuadrado(5)
+print(resultado)  # 25
+
+#con valor de retorno 2
+def cuadrado2(x) -&gt;int:
+    return x * x
+
+resultado = cuadrado2(5)
+print(resultado)  # 25
+
+#con valores por defecto
+def potencia(base, exponente=2):
+    return base ** exponente
+
+print(potencia(3))     # 9 (usa exponente=2)
+print(potencia(2, 5))  # 32
+
+#Parámetros con nombre (keyword arguments)
+def presentar(nombre, edad):
+    print(f"Me llamo {nombre} y tengo {edad} años.")
+
+presentar(edad=20, nombre="Juan")
+
+#Número variable de argumentos (*args)
+def sumar_todo(*numeros):
+    return sum(numeros)
+
+print(sumar_todo(1, 2, 3, 4, 5))  # 15
+
+#Número variable de argumentos con nombre (**kwargs)
+def mostrar_info(**datos):
+    for clave, valor in datos.items():
+        print(clave, ":", valor)
+
+mostrar_info(nombre="Ana", edad=25, pais="Honduras")
+#El parámetro con ** agrupa pares clave=valor en un diccionario.
+
+#Funciones vacías
+def pendiente():
+    pass  # Se implementará más adelante
+#Útil como marcador de posición.
+
+#Funciones anidadas
+def externa():
+    def interna():
+        return "Soy interna"
+    return interna()
+
+print(externa())
+
+#Funciones lambda (anónimas, de una sola línea)
+doble = lambda x: x * 2
+print(doble(5))  # 10
+
+#Ámbito de variables (scope)
+x = 10  # global
+
+def ejemplo():
+    x = 5  # local
+    print("Dentro de la función:", x)
+
+ejemplo()
+print("Fuera de la función:", x)
+
+#Funciones con documentación interna (docstring)
+def area_cuadrado(lado):
+    """Calcula el área de un cuadrado dado su lado."""
+    return lado * lado
+
+help(area_cuadrado)
+#👉 El docstring es el texto entre triple comillas para documentar la función.
+'''
+
+
+
+</code></pre>
+          </article>
+          <footer class="slide-footer">
+            <span>Bucles, funciones, modularidad y estructuras de datos</span>
+            <span>Elaborado por Osman Mejía</span>
+          </footer>
+        </div>
+      </div>
+    </section>
+    <section class="slide" data-index="5" data-title="Modularidad">
+      <div class="sheet">
+        <div class="slide-num">05 · Sintaxis Python</div>
+        <div class="content-wrap">
+          <header class="slide-header ae">
+            <p class="eyebrow">Programación en Python · Clase interactiva</p>
+            <h1 class="slide-title">Modularidad</h1>
+            <div class="meta-row">
+              <span>Hoja 05</span>
+              <span>214 palabras</span>
+              <span>1,698 caracteres</span>
+            </div>
+          </header>
+          <article class="code-card ae">
+            <div class="code-toolbar">
+              <span>Contenido original conservado</span>
+              <button class="copy-btn" type="button" data-copy="4">Copiar hoja</button>
+            </div>
+            <pre><code>'''MODULARIDAD**************************************************************
+ 📚 La modularidad consiste en dividir un programa grande en partes más pequeñas 
+     llamadas **módulos**, donde cada uno cumple una función específica dentro 
+     del sistema. Esta práctica mejora la organización, la comprensión y el 
+     mantenimiento del código.
+
+ 🧠  Ventajas de la modularidad:
+        🔹 Permite mantener un código más **ordenado y legible**, separando las 
+            responsabilidades de cada parte del programa.
+        🔹 Facilita la **reutilización de código**, ya que un módulo puede usarse 
+            en diferentes proyectos o programas.
+        🔹 Favorece el **trabajo en equipo**, porque cada persona puede trabajar 
+            en un módulo distinto sin interferir con los demás.
+        🔹 Mejora la **depuración y actualización**, ya que se pueden modificar 
+            partes del código sin afectar todo el programa.
+        🔹 En **econometría**, la modularidad permite desarrollar bibliotecas 
+            personalizadas para cálculos estadísticos, funciones de regresión o 
+            manipulación de datos, que luego pueden importarse en distintos análisis.
+
+ 💡  En Python, un módulo es simplemente un archivo con extensión `.py` que 
+      contiene funciones, clases o variables que pueden ser utilizadas en otros 
+      programas mediante la instrucción `import`.
+
+ ✍️  Pasos para aplicar la modularidad:
+        1️⃣ Crear un archivo con las funciones o herramientas necesarias (por ejemplo: `mimodulo.py`).
+        2️⃣ Importar ese módulo en otro archivo para reutilizar las funciones.
+        3️⃣ Ejecutar el código llamando las funciones del módulo según sea necesario.
+'''</code></pre>
+          </article>
+          <footer class="slide-footer">
+            <span>Bucles, funciones, modularidad y estructuras de datos</span>
+            <span>Elaborado por Osman Mejía</span>
+          </footer>
+        </div>
+      </div>
+    </section>
+    <section class="slide" data-index="6" data-title="Módulos en Python: ejemplos de importación">
+      <div class="sheet">
+        <div class="slide-num">06 · Sintaxis Python</div>
+        <div class="content-wrap">
+          <header class="slide-header ae">
+            <p class="eyebrow">Programación en Python · Clase interactiva</p>
+            <h1 class="slide-title">Módulos en Python: ejemplos de importación</h1>
+            <div class="meta-row">
+              <span>Hoja 06</span>
+              <span>108 palabras</span>
+              <span>878 caracteres</span>
+            </div>
+          </header>
+          <article class="code-card ae">
+            <div class="code-toolbar">
+              <span>Contenido original conservado</span>
+              <button class="copy-btn" type="button" data-copy="5">Copiar hoja</button>
+            </div>
+            <pre><code>
+#1- Crear un archivo con funciones (módulo)
+# mimodulo.py
+def saludar(nombre):
+    return f"Hola {nombre}, bienvenido a Python."
+
+def cuadrado(x):
+    """Devuelve el cuadrado de un número."""
+    return x * x
+
+def area_cuadrado(lado):
+    """Calcula el área de un cuadrado."""
+    return lado * lado
+
+#2- importar y usar
+# Main.py
+import mimodulo  
+print(mimodulo.saludar("Ana"))           # uso de función saludar
+print("Cuadrado de 5 =", mimodulo.cuadrado(5))
+print("Área de cuadrado de lado 4 =", mimodulo.area_cuadrado(4))
+
+#se crea un cache cuando trabajamos con modulos se puede borrar
+
+#Alternativas de importación
+#Importar funciones específicas
+from mimodulo import saludar, cuadrado
+
+print(saludar("Luis"))
+print(cuadrado(7))
+
+
+#Importar con un alias
+import mimodulo as mm
+print(mm.saludar("Pedro"))
+
+
+
+#Importar todo
+from mimodulo import *
+print(saludar("Juan"))
+
+
+
+</code></pre>
+          </article>
+          <footer class="slide-footer">
+            <span>Bucles, funciones, modularidad y estructuras de datos</span>
+            <span>Elaborado por Osman Mejía</span>
+          </footer>
+        </div>
+      </div>
+    </section>
+    <section class="slide" data-index="7" data-title="Integración de conocimientos y modularidad">
+      <div class="sheet">
+        <div class="slide-num">07 · Sintaxis Python</div>
+        <div class="content-wrap">
+          <header class="slide-header ae">
+            <p class="eyebrow">Programación en Python · Clase interactiva</p>
+            <h1 class="slide-title">Integración de conocimientos y modularidad</h1>
+            <div class="meta-row">
+              <span>Hoja 07</span>
+              <span>550 palabras</span>
+              <span>5,281 caracteres</span>
+            </div>
+          </header>
+          <article class="code-card ae">
+            <div class="code-toolbar">
+              <span>Contenido original conservado</span>
+              <button class="copy-btn" type="button" data-copy="6">Copiar hoja</button>
+            </div>
+            <pre><code>'''INTEGRACIÓN DE CONOCIMIENTOS Y MODULARIDAD**************************************************************
+ 📚 Este proyecto representa la culminación práctica de todos los conocimientos 
+     adquiridos hasta el momento. En él se integran los conceptos de variables, 
+     funciones, estructuras de control, bucles, modularidad y buenas prácticas 
+     de programación para crear un sistema funcional y reutilizable.
+
+ 🧠  Importancia de integrar los conocimientos:
+        - Permite comprender cómo cada bloque de código tiene una función específica 
+          dentro de una estructura lógica mayor.
+        - Desarrolla el pensamiento algorítmico, ayudando a planificar soluciones 
+          paso a paso y a estructurar ideas en forma de instrucciones.
+        - Refuerza la **modularidad**, al separar las tareas en funciones individuales 
+          dentro de un archivo (`Funciones.py`), que luego se importan y reutilizan 
+          en el programa principal (`Principal.py`).
+        - Demuestra la **interacción entre módulos**, donde el archivo principal actúa 
+          como coordinador del flujo del programa y las funciones ejecutan tareas concretas.
+        - En la **Econometría**, esta lógica modular se aplica al diseño de modelos 
+          analíticos: los módulos serían equivalentes a las etapas del análisis 
+          (recolección, procesamiento, estimación y visualización), mientras que el 
+          programa principal representa la integración de todo el proceso de modelado.
+
+ 💡  En este ejemplo, el sistema implementa un **menú interactivo** con las siguientes 
+      opciones: agregar, listar, modificar y eliminar datos. Cada opción está controlada 
+      por una función independiente, demostrando cómo se combinan la lógica condicional, 
+      los bucles y la modularidad en un solo flujo coherente.
+
+ ⚙️  Conceptos integrados:
+        🔹 Variables → almacenan la información ingresada por el usuario.  
+        🔹 Funciones → dividen el código en tareas específicas (agregar, listar, modificar, eliminar).  
+        🔹 Bucles → permiten la ejecución continua del menú hasta que el usuario decida salir.  
+        🔹 Condicionales → definen qué acción realizar según la opción seleccionada.  
+        🔹 Módulos → separan la lógica del programa en archivos reutilizables, mejorando su organización.  
+
+ 🧩  En conjunto, este ejercicio demuestra la importancia de la **programación estructurada**, 
+      donde cada parte cumple un propósito dentro de un sistema bien definido.
+
+ ✍️  Archivos involucrados:
+        📄 Funciones.py → contiene las funciones principales (limpiar pantalla, agregar, listar, modificar, eliminar).  
+        📄 Principal.py → ejecuta el flujo del programa, muestra el menú y coordina las funciones importadas.
+'''
+
+
+
+
+
+
+
+#**************************************************************
+# ARCHIVOS DE REFERENCIA PARA ESTA SECCIÓN
+#**************************************************************
+# Funciones.py
+#este archivo contiene las funciones
+#necesarias para un menu
+import os
+
+def limpiar_pantalla():
+    '''funcion para limpiar pantalla'''
+    os.system("cls" if os.name=="nt" else "clear" )
+    
+
+def pausa(msg="Presione ENTER para continuar"):
+    input(msg)
+
+
+def agregar(dato_actual: str) -&gt; str:
+    limpiar_pantalla()
+    print("**********AGREGAR DATO**********")
+    nuevo = input("Ingrese un texto:")
+    print("Dato fue agregado exitosamente")
+    pausa()
+    return nuevo
+
+def listar(dato_actual:str):
+    limpiar_pantalla()
+    print("**********LISTAR DATO**********")
+    if dato_actual:
+        print("Informacion almacenada:",dato_actual)
+    else:
+        print("no hay datos almacenados")
+    print("**********   FIN    **********")
+    pausa()
+
+def modificar(dato_actual:str)-&gt;str:
+    limpiar_pantalla()
+    print("**********MODIFICAR DATO**********")
+    if not dato_actual:
+        print("No hay dato para modificar")
+        pausa()
+        return dato_actual
+    extra=input("Texto a agregar al final")
+    resultado = dato_actual + extra
+    print("informacion actualizada exitosamente")
+    pausa()
+    return resultado
+
+def eliminar()-&gt;str:
+    limpiar_pantalla()
+    print("**********ELIMINAR DATO**********")
+    print("Informacion eliminada exitosamente")
+    pausa()
+    return ""
+
+
+
+#**************************************************************
+# Principal.py
+#**************************************************************
+from Funciones import limpiar_pantalla,pausa, agregar, listar, modificar, eliminar
+
+def mostrar_menu():
+    limpiar_pantalla()
+    print("********** MENU **********")
+    print("1- Agregar Dato")
+    print("2- Listar Dato")
+    print("3- Modificar Dato")
+    print("4- Eliminar Dato")
+    print("5- Salir")
+    return input("Opcion:").strip()
+
+def main():
+    dato=""
+    while True:
+        opcion=mostrar_menu()
+        if opcion == "1":
+            dato=agregar(dato)
+        elif opcion == "2":
+            listar(dato)
+        elif opcion == "3":
+            dato=modificar(dato)
+        elif opcion == "4":
+            dato=eliminar()
+        elif opcion == "5":
+            limpiar_pantalla()
+            print("Saliendo del programa")
+            break
+        else:
+            print("Opcion NO valida")
+            pausa()
+
+if __name__ == "__main__":
+    main()
+</code></pre>
+          </article>
+          <footer class="slide-footer">
+            <span>Bucles, funciones, modularidad y estructuras de datos</span>
+            <span>Elaborado por Osman Mejía</span>
+          </footer>
+        </div>
+      </div>
+    </section>
+    <section class="slide" data-index="8" data-title="Parte II: estructuras de datos y colecciones">
+      <div class="sheet">
+        <div class="slide-num">08 · Sintaxis Python</div>
+        <div class="content-wrap">
+          <header class="slide-header ae">
+            <p class="eyebrow">Programación en Python · Clase interactiva</p>
+            <h1 class="slide-title">Parte II: estructuras de datos y colecciones</h1>
+            <div class="meta-row">
+              <span>Hoja 08</span>
+              <span>134 palabras</span>
+              <span>1,141 caracteres</span>
+            </div>
+          </header>
+          <article class="code-card ae">
+            <div class="code-toolbar">
+              <span>Contenido original conservado</span>
+              <button class="copy-btn" type="button" data-copy="7">Copiar hoja</button>
+            </div>
+            <pre><code>##******PARTE II ESTRUCTURAS DE DATOS******''COLECCIONES******************************************
+ 📚 Las colecciones son **objetos que agrupan múltiples elementos** dentro de una 
+     sola estructura. En lugar de trabajar con una variable por dato, las colecciones 
+     permiten almacenar, organizar y gestionar grandes conjuntos de información 
+     de forma estructurada y eficiente.
+
+ 🧠  Importancia:
+        - Permiten manejar grandes volúmenes de datos de manera organizada.  
+        - Facilitan operaciones como búsqueda, filtrado, conteo y modificación.  
+        - Son esenciales para desarrollar análisis, reportes o modelos que usan 
+          múltiples registros, como ocurre en los estudios econométricos o financieros.  
+        - Fortalecen la **lógica estructurada**, al enseñar cómo se relacionan y 
+          manipulan conjuntos de información dentro de un programa.
+
+ 💡  En Python existen varios tipos de colecciones, cada una con características 
+      específicas y usos particulares:
+
+        🔹 **Listas (list)** 
+        🔹 **Tuplas (tuple)** 
+        🔹 **Conjuntos (set)** 
+        🔹 **Diccionarios (dict)** 
+'''
+
+
+</code></pre>
+          </article>
+          <footer class="slide-footer">
+            <span>Bucles, funciones, modularidad y estructuras de datos</span>
+            <span>Elaborado por Osman Mejía</span>
+          </footer>
+        </div>
+      </div>
+    </section>
+    <section class="slide" data-index="9" data-title="Listas: concepto, sintaxis y operaciones">
+      <div class="sheet">
+        <div class="slide-num">09 · Sintaxis Python</div>
+        <div class="content-wrap">
+          <header class="slide-header ae">
+            <p class="eyebrow">Programación en Python · Clase interactiva</p>
+            <h1 class="slide-title">Listas: concepto, sintaxis y operaciones</h1>
+            <div class="meta-row">
+              <span>Hoja 09</span>
+              <span>253 palabras</span>
+              <span>2,031 caracteres</span>
+            </div>
+          </header>
+          <article class="code-card ae">
+            <div class="code-toolbar">
+              <span>Contenido original conservado</span>
+              <button class="copy-btn" type="button" data-copy="8">Copiar hoja</button>
+            </div>
+            <pre><code>'''LISTAS**************************************************************
+ 📚 Una **lista** es una colección ordenada y modificable que permite almacenar 
+     múltiples elementos dentro de una sola variable. Es uno de los tipos de datos 
+     más utilizados en Python, ya que facilita el manejo de conjuntos de información 
+     de manera flexible y dinámica.
+
+ 🧠  Características principales:
+        🔹 Son **ordenadas**, es decir, cada elemento tiene una posición (índice).  
+        🔹 Son **mutables**, se pueden modificar, agregar o eliminar elementos.  
+        🔹 Admiten **tipos de datos mixtos**, como texto, números o incluso otras listas.  
+        🔹 Se declaran entre corchetes `[]`.  
+
+ 💡  Importancia:
+        - Permiten organizar grandes volúmenes de datos de forma estructurada.  
+        - Son ideales para manejar **series de observaciones** o **variables económicas** 
+          en proyectos de análisis y econometría.  
+        - Desarrollan la **lógica iterativa**, ya que pueden recorrerse con bucles para 
+          aplicar cálculos, filtros o transformaciones sobre los datos.
+
+ ✍️  Sintaxis básica:        
+'''
+#Declaracion
+# vacía
+productos = []
+# desde literales
+productos = ["Laptop", "Mouse", "Teclado"]
+# desde un iterable
+letras = list("ABC")  # ["A", "B", "C"]
+
+#Acceso
+productos[0]        # "Laptop"
+productos[-1]       # "Teclado"
+productos[0:2]      # ["Laptop", "Mouse"]
+productos[::2]      # salta de 2 en 2
+
+#Operaciones clave (paso a paso)
+productos.append("Monitor")      # 1) agrega al final
+productos.remove("Mouse")        # 2) elimina la primera coincidencia
+productos.insert(1, "Tablet")    # 3) inserta en índice
+productos.extend(["Cámara", "SD"])  # 4) concatena otra lista
+productos.sort()                 # 5) ordena in-place (alfabético)
+productos.sort(reverse=True)     # 6) orden descendente
+ordenada = sorted(productos)     # 7) devuelve una copia ordenada
+ultimo = productos.pop()         # 8) saca y retorna el último
+productos.clear()                # 9) deja la lista vacía
+
+
+
+
+</code></pre>
+          </article>
+          <footer class="slide-footer">
+            <span>Bucles, funciones, modularidad y estructuras de datos</span>
+            <span>Elaborado por Osman Mejía</span>
+          </footer>
+        </div>
+      </div>
+    </section>
+    <section class="slide" data-index="10" data-title="Programa de inventario con listas">
+      <div class="sheet">
+        <div class="slide-num">10 · Sintaxis Python</div>
+        <div class="content-wrap">
+          <header class="slide-header ae">
+            <p class="eyebrow">Programación en Python · Clase interactiva</p>
+            <h1 class="slide-title">Programa de inventario con listas</h1>
+            <div class="meta-row">
+              <span>Hoja 10</span>
+              <span>242 palabras</span>
+              <span>2,472 caracteres</span>
+            </div>
+          </header>
+          <article class="code-card ae">
+            <div class="code-toolbar">
+              <span>Contenido original conservado</span>
+              <button class="copy-btn" type="button" data-copy="9">Copiar hoja</button>
+            </div>
+            <pre><code>#***************************************************************************************************
+# Programa de Inventario con Listas
+import os
+def mostrar_menu():
+    os.system("cls")
+    print("\n--- MENÚ DE INVENTARIO ---")
+    print("1 - Agregar Producto")
+    print("2 - Listar Productos")
+    print("3 - Modificar un Producto")
+    print("4 - Eliminar un Producto")
+    print("5 - Salir")
+
+def agregar_producto(lista):
+    producto = input("Ingrese el nombre del producto: ")
+    lista.append(producto)
+    print(f"✅ '{producto}' agregado con éxito.")    
+
+def listar_productos(lista):
+    if len(lista) == 0:
+        print("⚠️ No hay productos en la lista.")
+    else:
+        print("\n📋 Lista de Productos:")
+        for i, producto in enumerate(lista, start=1):
+            print(f"{i}. {producto}")
+    
+def modificar_producto(lista):
+    listar_productos(lista)
+    if len(lista) == 0:
+        return
+    try:
+        indice = int(input("Ingrese el número del producto a modificar: "))
+        if 1 &lt;= indice &lt;= len(lista):
+            nuevo = input("Ingrese el nuevo nombre: ")
+            lista[indice - 1] = nuevo
+            print("✏️ Producto modificado correctamente.")
+        else:
+            print("❌ Número inválido.")
+    except ValueError:
+        print("⚠️ Debe ingresar un número válido.")    
+
+def eliminar_producto(lista):
+    listar_productos(lista)
+    if len(lista) == 0:
+        return
+    try:
+        indice = int(input("Ingrese el número del producto a eliminar: "))
+        if 1 &lt;= indice &lt;= len(lista):
+            eliminado = lista.pop(indice - 1)
+            print(f"🗑️ '{eliminado}' eliminado correctamente.")
+        else:
+            print("❌ Número inválido.")
+    except ValueError:
+        print("⚠️ Debe ingresar un número válido.")    
+
+# Programa principal
+if __name__ == "__main__":
+    productos = []
+    while True:
+        mostrar_menu()
+        opcion = input("Seleccione una opción: ")
+        if opcion == "1":
+            agregar_producto(productos)
+        elif opcion == "2":
+            listar_productos(productos)
+        elif opcion == "3":
+            modificar_producto(productos)
+        elif opcion == "4":
+            eliminar_producto(productos)
+        elif opcion == "5":
+            print("👋 Saliendo del programa. ¡Hasta luego!")
+            break
+        else:
+            print("⚠️ Opción no válida. Intente de nuevo.")
+        enter=input("Presione ENTER para continuar")        
+
+        
+'''
+
+</code></pre>
+          </article>
+          <footer class="slide-footer">
+            <span>Bucles, funciones, modularidad y estructuras de datos</span>
+            <span>Elaborado por Osman Mejía</span>
+          </footer>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-index="11" data-title="Tuplas">
+      <div class="sheet">
+        <div class="slide-num">11 · Sintaxis Python</div>
+        <div class="content-wrap">
+          <header class="slide-header ae">
+            <p class="eyebrow">Programación en Python · Clase interactiva</p>
+            <h1 class="slide-title">Tuplas</h1>
+            <div class="meta-row">
+              <span>Hoja 11</span>
+              <span>448 palabras</span>
+              <span>3,362 caracteres</span>
+            </div>
+          </header>
+          <article class="code-card ae">
+            <div class="code-toolbar">
+              <span>Contenido original conservado</span>
+              <button class="copy-btn" type="button" data-copy="10">Copiar hoja</button>
+            </div>
+            <pre><code>
+'''TUPLAS**************************************************************
+ 📚 Una **tupla** es una colección ordenada de elementos, similar a una lista, 
+     pero con la diferencia de que **no se puede modificar después de su creación**. 
+     Esto significa que una vez definida, no se pueden agregar, eliminar ni cambiar 
+     elementos. 
+
+ 🧠  Características principales:
+        🔹 Son **ordenadas** → cada elemento tiene una posición (índice).  
+        🔹 Son **inmutables** → su contenido no puede alterarse.  
+        🔹 Admiten **tipos de datos mixtos** (números, textos, listas, etc.).  
+        🔹 Se declaran entre paréntesis `( )`.  
+        🔹 Pueden contener un solo valor, pero debe terminar en coma.  
+
+ 💡  Importancia:
+        - Aumentan la **seguridad de los datos**, evitando cambios accidentales.  
+        - Son más **eficientes** en memoria que las listas.  
+        - Útiles cuando se necesita almacenar información fija o constante.  
+        - En **econometría**, las tuplas pueden representar **observaciones estáticas**, 
+          como parámetros de un modelo o coordenadas de una zona geográfica.  
+
+ ✍️  Sintaxis:       
+'''
+#Declaracion
+categorias = ("Electrónica", "Ropa", "Hogar")
+una_sola = ("Única",)  # atención a la coma
+
+#Acceso
+categorias[0]  # "Electrónica"
+# desempaquetado
+a, b, c = categorias
+#Al ser inmutables, no tienen append, remove, sort, etc.
+
+
+'''
+EJEMPLO:Registro de parámetros fijos en un modelo energético
+'''
+# Tupla con parámetros fijos de una planta solar (capacidad, eficiencia, costo_unitario)
+planta_solar = ("Planta Solar El Zamorano", 2500, 0.85, 0.12)
+# Desempaquetado de valores
+nombre, capacidad_kw, eficiencia, costo_kwh = planta_solar
+# Cálculo del costo estimado de generación anual
+produccion_anual_kwh = capacidad_kw * eficiencia * 365 * 24
+costo_total_anual = produccion_anual_kwh * costo_kwh
+# Resultados
+print(f"📍 {nombre}")
+print(f"Capacidad instalada: {capacidad_kw} kW")
+print(f"Eficiencia promedio: {eficiencia * 100:.1f}%")
+print(f"Costo estimado anual: ${costo_total_anual:,.2f}")
+'''
+🎓 Justificación: ¿Por qué usar tuplas en lugar de otras colecciones?
+Inmutabilidad y seguridad de los datos:Los parámetros de una planta (como la capacidad o la eficiencia 
+nominal) no deben cambiar durante la ejecución del programa. Usar una tupla garantiza que estos valores 
+permanezcan fijos e intactos, evitando errores humanos o modificaciones accidentales.
+
+Eficiencia en memoria y rendimiento:Las tuplas son más ligeras que las listas, ya que Python las 
+almacena en estructuras más compactas y no reserva espacio adicional para modificaciones. 
+En análisis de datos grandes —por ejemplo, modelos energéticos con miles de observaciones— 
+esto mejora el rendimiento.
+
+Representación lógica de “constantes agrupadas”:
+Una tupla comunica la idea de un registro estático o entidad fija, muy útil para parámetros de calibración,
+coordenadas geográficas o configuraciones iniciales. En cambio, una lista se usaría para datos dinámicos 
+o editables, como consumos mensuales o precios históricos.
+
+Mayor integridad conceptual:
+Desde la perspectiva de diseño de software y análisis econométrico, las tuplas refuerzan la integridad de 
+los supuestos del modelo, al separar claramente los valores que se calculan (variables) de los que se 
+establecen como fijos (constantes o condiciones iniciales).
+'''
+
+
+</code></pre>
+          </article>
+          <footer class="slide-footer">
+            <span>Bucles, funciones, modularidad y estructuras de datos</span>
+            <span>Elaborado por Osman Mejía</span>
+          </footer>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-index="12" data-title="Conjuntos">
+      <div class="sheet">
+        <div class="slide-num">12 · Sintaxis Python</div>
+        <div class="content-wrap">
+          <header class="slide-header ae">
+            <p class="eyebrow">Programación en Python · Clase interactiva</p>
+            <h1 class="slide-title">Conjuntos</h1>
+            <div class="meta-row">
+              <span>Hoja 12</span>
+              <span>597 palabras</span>
+              <span>4,597 caracteres</span>
+            </div>
+          </header>
+          <article class="code-card ae">
+            <div class="code-toolbar">
+              <span>Contenido original conservado</span>
+              <button class="copy-btn" type="button" data-copy="11">Copiar hoja</button>
+            </div>
+            <pre><code>'''CONJUNTOS**************************************************************
+ 📚 Un **conjunto** (set) es una colección **no ordenada** y **sin elementos duplicados**.  
+     Se utiliza para almacenar valores únicos y realizar operaciones matemáticas 
+     como unión, intersección y diferencia.  
+
+ 🧠  Características principales:
+        🔹 No mantiene un orden fijo (no tiene índice).  
+        🔹 No permite elementos repetidos.  
+        🔹 Es **mutable**, es decir, se pueden agregar o eliminar elementos.  
+        🔹 Se define con llaves `{}` o usando la función `set()`.  
+
+ 💡  Importancia:
+        - Permiten **eliminar duplicados** automáticamente de un conjunto de datos.  
+        - Facilitan operaciones **comparativas** entre grupos de información.  
+        - Son muy útiles para análisis donde se necesitan identificar elementos 
+          comunes o exclusivos entre categorías o periodos.  
+        - En **econometría o análisis energético**, pueden emplearse para comparar 
+          listas de zonas, clientes o registros entre dos periodos de medición.  
+
+ ✍️  Sintaxis:
+'''
+#Declaracion
+clientes = {"Cliente1", "Cliente2", "Cliente3"}
+vacio = set()
+
+#Operaciones
+clientes.add("Cliente4")                  # agrega 1
+clientes.update(["Cliente2", "Cliente5"]) # agrega varios
+clientes.discard("ClienteX")              # no falla si no existe
+clientes.remove("Cliente1")               # falla si no existe
+extraido = clientes.pop()                 # saca un elemento arbitrario
+clientes.clear()                          # vacía el set
+
+#operaciones de conjuntos 
+a = {"A", "B", "C"}
+b = {"B", "C", "D"}
+
+a | b   # unión -&gt; {"A","B","C","D"}
+a &amp; b   # intersección -&gt; {"B","C"}
+a - b   # diferencia -&gt; {"A"}
+a ^ b   # diferencia simétrica -&gt; {"A","D"}
+
+# Los conjuntos no tienen índice; se recorren con for
+for elemento in a:
+    print("Elemento:", elemento)
+    
+'''⚡ Ejemplo: Comparación de clientes activos entre dos periodos de facturación eléctrica'''
+# Conjuntos de clientes por mes
+clientes_mes1 = {"Ana", "Carlos", "Elena", "David", "Fernanda", "Luis"}
+clientes_mes2 = {"Carlos", "Elena", "Luis", "Gabriela", "Raúl"}
+
+# Operaciones de conjuntos
+clientes_continuan = clientes_mes1 &amp; clientes_mes2       # intersección
+clientes_nuevos = clientes_mes2 - clientes_mes1          # diferencia
+clientes_perdidos = clientes_mes1 - clientes_mes2        # diferencia inversa
+total_unico = clientes_mes1 | clientes_mes2              # unión sin duplicados
+
+# Resultados
+print("🔸 Clientes que continúan:", clientes_continuan)
+print("🟢 Clientes nuevos:", clientes_nuevos)
+print("🔴 Clientes perdidos:", clientes_perdidos)
+print("📊 Total único de clientes:", total_unico)
+
+'''SALIDA
+🔸 Clientes que continúan: {'Carlos', 'Elena', 'Luis'}
+🟢 Clientes nuevos: {'Gabriela', 'Raúl'}
+🔴 Clientes perdidos: {'Ana', 'David', 'Fernanda'}
+📊 Total único de clientes: {'Carlos', 'Ana', 'Luis', 'Elena', 'Raúl', 'David', 'Fernanda', 'Gabriela'}
+'''
+
+'''🎓 Justificación: ¿Por qué usar conjuntos y no listas, tuplas o diccionarios?
+Eliminación automática de duplicados:
+En contextos empresariales o energéticos, puede haber registros repetidos por errores de captura o 
+consolidación de bases de datos. Los conjuntos eliminan duplicados de forma automática, garantizando 
+que cada cliente o registro se contabilice solo una vez.
+👉 En cambio, una lista permitiría duplicados y requeriría pasos adicionales (como convertir a set() 
+   o usar filtros).
+
+Operaciones matemáticas rápidas y expresivas:
+Los conjuntos permiten realizar comparaciones directas entre grupos (unión, intersección, diferencia) 
+con una sintaxis clara y eficiente.
+Estas operaciones son más rápidas que recorrer listas con bucles, especialmente en grandes volúmenes 
+de datos, como análisis de clientes entre dos meses de facturación.
+
+Desempeño y eficiencia computacional:
+Los set están implementados con tablas hash, lo que hace que operaciones como búsqueda o verificación (in) 
+sean mucho más rápidas que en listas o tuplas, donde se requiere recorrer todos los elementos.
+
+Claridad semántica y seguridad lógica:
+Desde el punto de vista del diseño del programa, los conjuntos expresan la idea de pertenencia y 
+comparación, no de orden o secuencia.
+Por ejemplo, “¿qué clientes se mantuvieron?” o “¿cuáles son exclusivos del mes 2?” son preguntas de 
+conjunto, no de índice ni de posición.
+
+Flexibilidad controlada:
+A diferencia de las tuplas (inmutables) y las listas (ordenadas), los conjuntos son mutables y 
+no ordenados, lo que permite agregar o eliminar elementos según cambien los datos, sin preocuparse por 
+el orden.
+'''
+
+    
+
+</code></pre>
+          </article>
+          <footer class="slide-footer">
+            <span>Bucles, funciones, modularidad y estructuras de datos</span>
+            <span>Elaborado por Osman Mejía</span>
+          </footer>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-index="13" data-title="Diccionarios">
+      <div class="sheet">
+        <div class="slide-num">13 · Sintaxis Python</div>
+        <div class="content-wrap">
+          <header class="slide-header ae">
+            <p class="eyebrow">Programación en Python · Clase interactiva</p>
+            <h1 class="slide-title">Diccionarios</h1>
+            <div class="meta-row">
+              <span>Hoja 13</span>
+              <span>347 palabras</span>
+              <span>2,737 caracteres</span>
+            </div>
+          </header>
+          <article class="code-card ae">
+            <div class="code-toolbar">
+              <span>Contenido original conservado</span>
+              <button class="copy-btn" type="button" data-copy="12">Copiar hoja</button>
+            </div>
+            <pre><code>'''DICCIONARIOS**************************************************************
+ 📚 Un **diccionario** (dict) es una colección **no ordenada** de elementos que 
+     almacena datos en **pares clave - valor**. Cada elemento tiene una **clave única**, 
+     que se utiliza para acceder o modificar su valor correspondiente.  
+
+ 🧠  Características principales:
+        🔹 Los datos se guardan en pares: **clave : valor**.  
+        🔹 No permiten claves duplicadas.  
+        🔹 Son **mutables**, es decir, pueden modificarse después de su creación.  
+        🔹 Se definen con llaves `{}`.  
+        🔹 Son ideales para representar objetos, registros o información estructurada.  
+
+ 💡  Importancia:
+        - Permiten **organizar datos de manera estructurada**, como si fueran 
+          minibases de datos dentro del programa.  
+        - Facilitan el acceso rápido a información mediante el uso de claves.  
+        - Son esenciales para manipular datos tabulares o jerárquicos.  
+        - En **econometría o análisis energético**, pueden representar registros 
+          de clientes, zonas, indicadores o resultados de modelos.  
+
+ ✍️  Sintaxis:
+'''
+producto = {"id": 1, "nombre": "Laptop", "precio": 750}
+producto.get("stock", 0)   # acceso con valor por defecto (0)
+
+producto["stock"] = 10                 # 1) crea/actualiza
+producto.update({"precio": 800})       # 2) actualiza varios
+valor = producto.pop("stock", None)    # 3) quita y retorna (o None)
+del producto["precio"]                 # 4) elimina clave (si existe)
+producto.clear()                       # 5) limpia todo
+
+#recorridos
+for k in producto.keys():     # claves
+    print(k)
+
+for v in producto.values():   # valores
+    print(v)
+
+for k, v in producto.items(): # pares clave-valor
+    print(k, v)
+ 
+    
+'''⚙️ Ejemplo: Registro de consumo energético de clientes'''    
+# Diccionario de clientes con sus datos
+clientes = {
+    "C001": {"nombre": "Ana Pérez", "zona": "Norte", "consumo_kwh": 450, "tarifa": 0.18},
+    "C002": {"nombre": "Carlos Díaz", "zona": "Sur", "consumo_kwh": 620, "tarifa": 0.16},
+    "C003": {"nombre": "Elena López", "zona": "Centro", "consumo_kwh": 300, "tarifa": 0.20}
+}
+
+# Calcular y agregar el monto a pagar por cliente
+for codigo, datos in clientes.items():
+    monto = datos["consumo_kwh"] * datos["tarifa"]
+    clientes[codigo]["monto_pagar"] = monto
+
+# Mostrar resultados
+for codigo, datos in clientes.items():
+    print(f"Cliente {codigo}: {datos['nombre']} | Zona: {datos['zona']} | Monto a pagar: ${datos['monto_pagar']:.2f}")
+
+'''SALIDA
+Cliente C001: Ana Pérez | Zona: Norte | Monto a pagar: $81.00
+Cliente C002: Carlos Díaz | Zona: Sur | Monto a pagar: $99.20
+Cliente C003: Elena López | Zona: Centro | Monto a pagar: $60.00
+'''    
+
+</code></pre>
+          </article>
+          <footer class="slide-footer">
+            <span>Bucles, funciones, modularidad y estructuras de datos</span>
+            <span>Elaborado por Osman Mejía</span>
+          </footer>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-index="14" data-title="Métodos y funciones de manipulación comunes">
+      <div class="sheet">
+        <div class="slide-num">14 · Sintaxis Python</div>
+        <div class="content-wrap">
+          <header class="slide-header ae">
+            <p class="eyebrow">Programación en Python · Clase interactiva</p>
+            <h1 class="slide-title">Métodos y funciones de manipulación comunes</h1>
+            <div class="meta-row">
+              <span>Hoja 14</span>
+              <span>111 palabras</span>
+              <span>883 caracteres</span>
+            </div>
+          </header>
+          <article class="code-card ae">
+            <div class="code-toolbar">
+              <span>Contenido original conservado</span>
+              <button class="copy-btn" type="button" data-copy="13">Copiar hoja</button>
+            </div>
+            <pre><code>#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+#Métodos y funciones de manipulación comunes***************************************************************************
+# len
+len([1, 2, 3])             # 3
+len({"a": 1, "b": 2})      # 2
+
+# in (pertenencia)
+"Mouse" in ["Laptop", "Mouse"]      # True
+"precio" in {"precio": 100}         # True (busca clave en dict)
+"Cliente1" in {"Cliente1", "Cliente2"}  # True
+
+# del (borrar por clave o índice)
+d = {"x": 1, "y": 2}
+del d["x"]                  # elimina clave x
+
+l = [10, 20, 30]
+del l[1]                    # elimina elemento en índice 1 -&gt; [10, 30]
+
+# update (diccionarios)
+config = {"modo": "prod", "retry": 3}
+config.update({"retry": 5, "cache": True})
+
+# pop
+val = config.pop("retry", 0) # 5; si no existe retorna 0
+
+# clear
+config.clear()              # {}
+
+
+
+</code></pre>
+          </article>
+          <footer class="slide-footer">
+            <span>Bucles, funciones, modularidad y estructuras de datos</span>
+            <span>Elaborado por Osman Mejía</span>
+          </footer>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-index="15" data-title="Iteración con for y while">
+      <div class="sheet">
+        <div class="slide-num">15 · Sintaxis Python</div>
+        <div class="content-wrap">
+          <header class="slide-header ae">
+            <p class="eyebrow">Programación en Python · Clase interactiva</p>
+            <h1 class="slide-title">Iteración con for y while</h1>
+            <div class="meta-row">
+              <span>Hoja 15</span>
+              <span>78 palabras</span>
+              <span>563 caracteres</span>
+            </div>
+          </header>
+          <article class="code-card ae">
+            <div class="code-toolbar">
+              <span>Contenido original conservado</span>
+              <button class="copy-btn" type="button" data-copy="14">Copiar hoja</button>
+            </div>
+            <pre><code>#Iteración con for y while
+#for sobre lista/tupla/set
+items = ["Laptop", "Mouse", "Teclado"]
+
+for item in items:
+    print(item)
+
+# con índice
+for i, item in enumerate(items, start=0):
+    print(i, item)
+    
+#for sobre diccionario
+producto = {"id": 1, "nombre": "Laptop", "precio": 750}
+
+for clave in producto:  # equivalente a producto.keys()
+    print(clave)
+
+for clave, valor in producto.items():
+    print(clave, valor)
+
+
+#while controlado por condicion indice
+numeros = [10, 20, 30, 40]
+i = 0
+while i &lt; len(numeros):
+    print(numeros[i])
+    i += 1
+    
+
+
+</code></pre>
+          </article>
+          <footer class="slide-footer">
+            <span>Bucles, funciones, modularidad y estructuras de datos</span>
+            <span>Elaborado por Osman Mejía</span>
+          </footer>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-index="16" data-title="Resumen de estructuras de datos">
+      <div class="sheet">
+        <div class="slide-num">16 · Sintaxis Python</div>
+        <div class="content-wrap">
+          <header class="slide-header ae">
+            <p class="eyebrow">Programación en Python · Clase interactiva</p>
+            <h1 class="slide-title">Resumen de estructuras de datos</h1>
+            <div class="meta-row">
+              <span>Hoja 16</span>
+              <span>65 palabras</span>
+              <span>434 caracteres</span>
+            </div>
+          </header>
+          <article class="code-card ae">
+            <div class="code-toolbar">
+              <span>Contenido original conservado</span>
+              <button class="copy-btn" type="button" data-copy="15">Copiar hoja</button>
+            </div>
+            <pre><code>#***************************************************************************************************
+# RESUMEN ESTRUCTURAS DE DATOS: Comparativo General
+'''
+Aspecto	    Listas	 Tuplas	Conjuntos	Diccionarios
+Ordenadas	✅ Sí	✅ Sí	❌ No	⚠️ No garantizan orden 
+Mutables	✅ Sí	❌ No	✅ Sí	✅ Sí
+Duplicados	✅ Sí	✅ Sí	❌ No	❌ No (claves únicas)
+Accíndice	✅ Sí	✅ Sí	❌ No	❌ No (por clave)
+Eficiencia	Media	  Alta 	   Alta  	Alta (hash por clave)
+'''</code></pre>
+          </article>
+          <footer class="slide-footer">
+            <span>Bucles, funciones, modularidad y estructuras de datos</span>
+            <span>Elaborado por Osman Mejía</span>
+          </footer>
+        </div>
+      </div>
+    </section>
+
+</main>
+<nav class="nav" aria-label="Navegación del portal">
+  <button id="prev" title="Anterior">‹</button>
+  <div class="dots" id="dots"></div>
+  <div class="ctr" id="ctr"></div>
+  <button id="next" title="Siguiente">›</button>
+</nav>
+<div class="help">← → para navegar</div>
+<script>
+const slides = Array.from(document.querySelectorAll('.slide'));
+const dotsBox = document.getElementById('dots');
+const ctr = document.getElementById('ctr');
+const progress = document.getElementById('progress');
+let current = 0;
+
+slides.forEach((slide,i)=>{
+  const d=document.createElement('button');
+  d.className='dot';
+  d.type='button';
+  d.setAttribute('aria-label',`Ir a hoja ${i+1}`);
+  d.onclick=()=>go(i);
+  dotsBox.appendChild(d);
+});
+
+const dots = Array.from(document.querySelectorAll('.dot'));
+
+function go(n){
+  const next = (n + slides.length) % slides.length;
+  if(next === current) return;
+  slides[current].classList.remove('active');
+  slides[current].classList.add('exit');
+  setTimeout(()=>slides[current]?.classList.remove('exit'),560);
+  current = next;
+  slides[current].classList.add('active');
+  update();
+}
+
+function update(){
+  dots.forEach((d,i)=>d.classList.toggle('on',i===current));
+  ctr.textContent = `${String(current+1).padStart(2,'0')} / ${String(slides.length).padStart(2,'0')}`;
+  progress.style.width = `${((current+1)/slides.length)*100}%`;
+}
+
+const prevBtn = document.getElementById('prev');
+const nextBtn = document.getElementById('next');
+if (prevBtn) prevBtn.addEventListener('click', ()=>go(current-1));
+if (nextBtn) nextBtn.addEventListener('click', ()=>go(current+1));
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='PageDown')go(current+1);
+  if(e.key==='ArrowLeft'||e.key==='PageUp')go(current-1);
+  if(e.key==='Home')go(0);
+  if(e.key==='End')go(slides.length-1);
+});
+
+
+
+document.querySelectorAll('.copy-btn').forEach(btn=>{
+  btn.addEventListener('click', async () => {
+    const codeBlock = btn.closest('.code-card')?.querySelector('pre code');
+    const textToCopy = codeBlock ? codeBlock.textContent : '';
+    try {
+      await navigator.clipboard.writeText(textToCopy);
+      const old = btn.textContent;
+      btn.textContent = 'Copiado';
+      setTimeout(()=>btn.textContent = old, 1200);
+    } catch (err) {
+      alert('No se pudo copiar automáticamente. Seleccione el texto manualmente.');
+    }
+  });
+});
+
+update();
+
+
+</script>
+</body>
+</html>
